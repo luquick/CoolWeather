@@ -21,6 +21,7 @@ import com.seashell.coolweather.Utils.Utility;
 import com.seashell.coolweather.db.City;
 import com.seashell.coolweather.db.County;
 import com.seashell.coolweather.db.Province;
+import com.seashell.coolweather.ui.WeatherActivity;
 
 import org.litepal.crud.DataSupport;
 
@@ -94,6 +95,10 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (mCurrentLevel == LEVEL_CITY) {
                     mSelectedCity = mCityList.get(position);
                     queryCounties();
+                } else if (mCurrentLevel == LEVEL_COUNTY) {
+                    String weatherId = mCountyList.get(position).getWeatherId();
+                    WeatherActivity.actionStart(getContext(),weatherId);
+                    getActivity().finish();
                 }
             }
         });

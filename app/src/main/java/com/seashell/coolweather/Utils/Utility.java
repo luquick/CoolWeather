@@ -2,9 +2,11 @@ package com.seashell.coolweather.Utils;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.seashell.coolweather.db.City;
 import com.seashell.coolweather.db.County;
 import com.seashell.coolweather.db.Province;
+import com.seashell.coolweather.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,11 +46,12 @@ public class Utility {
 
     /**
      * Analytical processing city data from server
+     *
      * @param response
      * @param provinceId
      * @return
      */
-    public static boolean handleCityResponse(String response ,int provinceId) {
+    public static boolean handleCityResponse(String response, int provinceId) {
         if (!TextUtils.isEmpty(response)) {
             try {
                 JSONArray allCity = new JSONArray(response);
@@ -70,6 +73,7 @@ public class Utility {
 
     /**
      * Analytical processing county data from server
+     *
      * @param response
      * @param cityId
      * @return
@@ -94,4 +98,20 @@ public class Utility {
         return false;
     }
 
+    /**
+     * Returns the JSON data parsed into eather entities
+     * @param response
+     * @return
+     */
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
