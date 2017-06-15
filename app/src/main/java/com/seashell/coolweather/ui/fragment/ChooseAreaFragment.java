@@ -16,13 +16,12 @@ import android.widget.Toast;
 
 import com.seashell.coolweather.MainActivity;
 import com.seashell.coolweather.R;
-import com.seashell.coolweather.Utils.HttpUtil;
-import com.seashell.coolweather.Utils.LogUtil;
-import com.seashell.coolweather.Utils.Utility;
+import com.seashell.coolweather.util.HttpUtil;
+import com.seashell.coolweather.util.LogUtil;
+import com.seashell.coolweather.util.Utility;
 import com.seashell.coolweather.db.City;
 import com.seashell.coolweather.db.County;
 import com.seashell.coolweather.db.Province;
-import com.seashell.coolweather.gson.Weather;
 import com.seashell.coolweather.ui.WeatherActivity;
 
 import org.litepal.crud.DataSupport;

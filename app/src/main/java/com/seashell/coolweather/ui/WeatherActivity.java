@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +22,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.seashell.coolweather.R;
-import com.seashell.coolweather.Utils.HttpUtil;
-import com.seashell.coolweather.Utils.LogUtil;
-import com.seashell.coolweather.Utils.Utility;
+import com.seashell.coolweather.util.HttpUtil;
+import com.seashell.coolweather.util.Utility;
 import com.seashell.coolweather.gson.Forecast;
 import com.seashell.coolweather.gson.Weather;
 

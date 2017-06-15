@@ -1,4 +1,4 @@
-package com.seashell.coolweather.Utils;
+package com.seashell.coolweather.util;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

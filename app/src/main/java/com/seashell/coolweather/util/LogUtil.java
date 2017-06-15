@@ -1,4 +1,4 @@
-package com.seashell.coolweather.Utils;
+package com.seashell.coolweather.util;
 
 import android.util.Log;
 
