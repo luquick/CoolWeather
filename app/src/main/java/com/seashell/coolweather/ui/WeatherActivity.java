@@ -7,10 +7,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -34,6 +38,9 @@ import okhttp3.Response;
 public class WeatherActivity extends AppCompatActivity {
     private static final String TAG = WeatherActivity.class.getSimpleName();
 
+    public DrawerLayout mDrawer;
+    public SwipeRefreshLayout mSwipeRefresh;
+    private Button mBack;
     private ScrollView mWeatherLayout;
     private TextView mTitleCity;
     private TextView mTitleUpdateTime;
@@ -67,6 +74,14 @@ public class WeatherActivity extends AppCompatActivity {
      * Initialize each element
      */
     private void initWidget() {
+        mDrawer = (DrawerLayout) this.findViewById(R.id.drawer_layout);
+        mBack = (Button) this.findViewById(R.id.nav_button);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.openDrawer(GravityCompat.START);
+            }
+        });
         mWeatherLayout = (ScrollView) this.findViewById(R.id.weather_sv);
         mTitleCity = (TextView) this.findViewById(R.id.title_city);
         mTitleUpdateTime = (TextView) this.findViewById(R.id.title_update_time);
@@ -79,6 +94,8 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashText = (TextView) this.findViewById(R.id.car_wash_tv);
         mSportText = (TextView) this.findViewById(R.id.sport_tv);
         mBingPic = (ImageView) this.findViewById(R.id.bing_pic_imv);
+        mSwipeRefresh = (SwipeRefreshLayout) this.findViewById(R.id.swipe_refresh);
+        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
@@ -86,17 +103,25 @@ public class WeatherActivity extends AppCompatActivity {
      * Parsing the weather data from the cache or server
      */
     private void parseDataWithCacheOrServer() {
+        final String weatherId;
         loadPicFromCacheWithServer();
         String weatherString = mPreferences.getString("weather", null);
         if (weatherString != null) {
             Weather weather = Utility.handleWeatherResponse(weatherString);
+            weatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
             //Parsing the weather data from the server
-            String weatherId = getIntent().getStringExtra("weather_id");
+            weatherId = getIntent().getStringExtra("weather_id");
             mWeatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
     }
 
     /**
@@ -161,6 +186,7 @@ public class WeatherActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherActivity.this, "Failed to get the weather information", Toast.LENGTH_SHORT).show();
                         }
+                        mSwipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -171,6 +197,7 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(WeatherActivity.this, "Failed to get the weather information", Toast.LENGTH_SHORT).show();
+                        mSwipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -220,10 +247,11 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * External invocation jumps
+     *
      * @param context
      * @param weatherId
      */
-    public static void actionStart(Context context,String weatherId) {
+    public static void actionStart(Context context, String weatherId) {
         Intent intent = new Intent(context, WeatherActivity.class);
         intent.putExtra("weather_id", weatherId);
         context.startActivity(intent);

@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.seashell.coolweather.MainActivity;
 import com.seashell.coolweather.R;
 import com.seashell.coolweather.Utils.HttpUtil;
 import com.seashell.coolweather.Utils.LogUtil;
@@ -21,6 +22,7 @@ import com.seashell.coolweather.Utils.Utility;
 import com.seashell.coolweather.db.City;
 import com.seashell.coolweather.db.County;
 import com.seashell.coolweather.db.Province;
+import com.seashell.coolweather.gson.Weather;
 import com.seashell.coolweather.ui.WeatherActivity;
 
 import org.litepal.crud.DataSupport;
@@ -97,8 +99,15 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 } else if (mCurrentLevel == LEVEL_COUNTY) {
                     String weatherId = mCountyList.get(position).getWeatherId();
-                    WeatherActivity.actionStart(getContext(),weatherId);
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity) {
+                        WeatherActivity.actionStart(getContext(), weatherId);
+                        getActivity().finish();
+                    } else if (getActivity() instanceof WeatherActivity) {
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.mDrawer.closeDrawers();
+                        activity.mSwipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
         });
@@ -147,7 +156,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         mTitle.setText(mSelectedProvince.getProvinceName());
         mBack.setVisibility(View.VISIBLE);
-        LogUtil.d(TAG ,"provinceId = " + mSelectedProvince.getId());
+        LogUtil.d(TAG, "provinceId = " + mSelectedProvince.getId());
         mCityList = DataSupport.where("provinceId=?", String.valueOf(mSelectedProvince.getId())).find(City.class);
         if (mCityList.size() > 0) {
             mDatas.clear();
@@ -172,7 +181,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounties() {
         mTitle.setText(mSelectedCity.getCityName());
         mBack.setVisibility(View.VISIBLE);
-        LogUtil.d(TAG ,"cityId = " + mSelectedCity.getId());
+        LogUtil.d(TAG, "cityId = " + mSelectedCity.getId());
         mCountyList = DataSupport.where("cityId=?", String.valueOf(mSelectedCity.getId())).find(County.class);
         if (mCountyList.size() > 0) {
             mDatas.clear();
